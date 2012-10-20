@@ -24,9 +24,9 @@
 	</developers>
 	
 	<scm>
-		<connection>scm:git:git@bitbucket.org:doubleshow/sikulix.git</connection>
-		<developerConnection>scm:git:git@bitbucket.org:doubleshow/sikulix.git</developerConnection>
-		<url>git@bitbucket.org:doubleshow/sikulix.git</url>
+		<connection>scm:git:git@bitbucket.org:doubleshow/sikuli-core.git</connection>
+		<developerConnection>scm:git:git@bitbucket.org:doubleshow/sikuli-core.git</developerConnection>
+		<url>git@bitbucket.org:doubleshow/sikuli-core.git</url>
 	</scm>
 	
 	<groupId>org.sikuli</groupId>
