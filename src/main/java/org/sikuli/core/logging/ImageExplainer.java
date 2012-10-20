@@ -1,0 +1,327 @@
+/*******************************************************************************
+ * Copyright 2011 sikuli.org
+ * Released under the MIT license.
+ * 
+ * Contributors:
+ *     Tom Yeh - initial API and implementation
+ ******************************************************************************/
+package org.sikuli.core.logging;
+
+import static com.googlecode.javacv.cpp.opencv_core.cvConvertScale;
+import static com.googlecode.javacv.cpp.opencv_core.cvSize;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import org.sikuli.core.draw.ImageRenderer;
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroupFile;
+
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
+import edu.umd.cs.piccolo.PCanvas;
+import edu.umd.cs.piccolo.nodes.PImage;
+import edu.umd.cs.piccolo.nodes.PPath;
+import edu.umd.cs.piccolo.nodes.PText;
+
+class ImageExplanation {
+	String imageLocalPath;
+	Object message;
+	ImageExplainer.Level level;
+	long timestamp;
+	ImageExplainer logger;
+	BufferedImage image;
+}
+
+interface Appender {
+	void doAppend(ImageExplanation event);	
+}
+
+class DefaultAppender implements Appender {
+
+	private static final int MIN_CANVAS_HEIGHT = 30;
+	private static final int MIN_CANVAS_WIDTH = 400;
+
+	private int counter = 0;
+	
+	static final private String DefaultOutputDirectory = "log";
+	
+	static private File getOutputDirectory(){
+		File outputDir = new File(DefaultOutputDirectory);
+		if (!outputDir.exists())
+			outputDir.mkdir();
+		return outputDir;
+	}		
+
+	static public BufferedImage createComponentImage(Component component) {
+		Dimension size = component.getSize();
+		BufferedImage image = new BufferedImage(size.width, size.height,
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = image.createGraphics();
+		component.paint(g2);
+		g2.dispose();
+		return image;
+	}
+
+	static BufferedImage paintMessageOnImage(BufferedImage input, Object message){
+		final PCanvas canvas = new PCanvas();
+		final PText text = new PText(message.toString());
+		//        f.add(canvas);
+		text.setOffset(0,0);
+		text.setPaint(Color.white);
+		text.setTextPaint(Color.black);
+		text.setTransparency(0.9f);
+
+		final PImage image = new PImage(input);
+		image.setOffset(0,30);
+		
+		PPath imageBorder = PPath.createRectangle(0,30,(int)image.getWidth()-1,(int)image.getHeight()-1);
+		imageBorder.setPaint(null);
+		imageBorder.setStrokePaint(Color.black);
+		imageBorder.setStroke(new BasicStroke(1f));
+		
+		canvas.getLayer().addChild(image);
+		canvas.getLayer().addChild(text);
+		canvas.getLayer().addChild(imageBorder);
+
+		int w = Math.max(MIN_CANVAS_WIDTH, input.getWidth());
+		int h = Math.max(MIN_CANVAS_HEIGHT, input.getHeight()+30);
+		canvas.setBounds(0,0,w,h);
+
+		return createComponentImage(canvas);
+	}
+
+	public void doAppend(ImageExplanation event){
+		// immediately write to the disk
+		String filename = "explain." + event.logger.getName() + "." + counter + ".png";
+		try {
+
+			BufferedImage imageWithMessage = paintMessageOnImage(event.image, event.message);
+
+			File imageFile = new File(getOutputDirectory(), filename);
+			
+			ImageIO.write(imageWithMessage, "png", imageFile);			
+			event.imageLocalPath = filename;
+			// release the reference to the bufferedimage so it can be garbage collected
+			event.image = null;
+
+		} catch (IOException e) {
+		} 		
+		counter++;
+	}
+
+}
+
+public class ImageExplainer {
+	
+	static public class Level {
+		static final int ALL_INT = 100;
+		static final int STEP_INT = 2;
+		static final int RESULT_INT = 1;
+		static final int OFF_INT = 0;	
+
+		final private int levelInt;
+		final private String levelString;
+		Level(int level, String levelString){
+			this.levelInt = level;
+			this.levelString = levelString;
+		}
+
+		public boolean isGreaterOrEqual(Level anotherLevel){
+			return this.levelInt >= anotherLevel.levelInt;
+		}
+
+		static public Level ALL = new Level(ALL_INT,"ALL");
+		static public Level STEP = new Level(STEP_INT,"STEP");
+		static public Level RESULT = new Level(RESULT_INT,"RESULT");
+		static public Level OFF = new Level(OFF_INT,"OFF");
+
+	}
+
+	final private Appender appender = new DefaultAppender();
+
+	final private String name;
+	private Level level = Level.OFF;
+	private int counter = 0;
+
+	class ImageLogRecord{
+		String title = "";
+		String image_filename = "";
+		String description = "";
+	}
+
+	private List<ImageLogRecord> records = new ArrayList<ImageLogRecord>();
+
+	public ImageExplainer(String name){
+		this.name = name;
+	}
+
+	public void setLevel(Level level){
+		this.level = level;
+	}
+
+
+	public void writeLogReportAsHTML() throws IOException{
+		STGroupFile g = new STGroupFile("org/sikuli/core/cv/logger.stg", "utf-8", '$', '$');
+
+		List<ST> sts = new ArrayList<ST>();				
+		for (ImageLogRecord record : records){		
+			ST st = g.getInstanceOf("image_log_record");
+			st.add("title",record.title);
+			st.add("image_filename",record.image_filename);
+			st.add("description", record.description);
+			sts.add(st);
+		}
+
+		ST reportST = g.getInstanceOf("report");
+		reportST.add("records",sts);
+
+		BufferedWriter out = new BufferedWriter(new FileWriter(getName() + ".html"));
+		out.write(reportST.render());
+		out.flush();
+	}
+
+
+	public void result(IplImage image, Object message){
+		result(image.getBufferedImage(),message);
+	}
+	
+	public void step(ImageRenderer producer, Object message){
+		if (level.isGreaterOrEqual(Level.STEP)){
+			step(producer.render(), message);
+		}
+	}
+	
+	public void result(ImageRenderer producer, Object message){
+		if (level.isGreaterOrEqual(Level.RESULT)){
+			result(producer.render(), message);
+		}
+	}
+
+	public void step(IplImage image, Object message){
+		step(image.getBufferedImage(),message);
+	}
+
+	public void step(BufferedImage image, Object message){	
+		if (level.isGreaterOrEqual(Level.STEP)){
+			ImageExplanation event = new ImageExplanation();
+			event.level = Level.STEP;
+			event.logger = this;
+			event.message = message;
+			event.timestamp = new Date().getTime();
+			event.image = image;
+			appender.doAppend(event);
+		}
+	}
+
+	public void result(BufferedImage image, Object message){
+		if (level.isGreaterOrEqual(Level.RESULT)){
+			ImageExplanation event = new ImageExplanation();
+			event.level = Level.RESULT;
+			event.logger = this;
+			event.message = message;
+			event.timestamp = new Date().getTime();
+			event.image = image;
+			appender.doAppend(event);
+		}
+	}
+
+	@Deprecated
+	public void log(String title, IplImage image){
+		log(title, image.getBufferedImage());
+	}
+
+	@Deprecated
+	public void log(String title, BufferedImage image) {
+
+		String filename = "vlog." + getName() + "." + counter + "." + title + ".png";
+		try {
+			ImageIO.write(image, "png", new File(filename));			
+		} catch (IOException e) {
+		}		
+
+		ImageExplanation event = new ImageExplanation();
+		event.logger = this;
+		event.message = title;
+		event.timestamp = new Date().getTime();
+		event.imageLocalPath = filename;
+		appender.doAppend(event);		
+	}
+
+	@Deprecated
+	public void log(String title, BufferedImage image, String description) {
+
+		String filename = "vlog." + getName() + "." + counter + "." + title + ".png";
+		counter++;
+		try {
+			ImageIO.write(image, "png", new File(filename));
+
+			ImageLogRecord r = new ImageLogRecord();
+			r.title = title;
+			r.image_filename = filename;		
+			r.description = description;
+			records.add(r);
+
+		} catch (IOException e) {
+		}		
+	}
+
+	@Deprecated
+	static private boolean isEnabled = false;
+	@Deprecated
+	static public void setEnabledGlobal(boolean enabled){
+		isEnabled = enabled;
+	}
+	
+	static private int count;
+	@Deprecated
+	static public void vlog(String title, BufferedImage image) {
+		if (!isEnabled)
+			return;		
+		String name = "vlog." + count + "." + title + ".png";
+		try {
+			ImageIO.write(image, "png", new File(name));
+		} catch (IOException e) {
+		}		
+		count++;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	final static Map<String,ImageExplainer> explainers = new HashMap<String,ImageExplainer>();
+	
+	static public ImageExplainer getExplainer(Class clazz){
+		return getExplainer(clazz.getCanonicalName());		
+	}
+	
+	static public ImageExplainer getExplainer(String name){
+		ImageExplainer explainer;
+		if (explainers.containsKey(name)){
+			explainer = explainers.get(name);
+		}else{
+			explainer = new ImageExplainer(name);
+			explainers.put(name, explainer);
+		}
+		return explainer;
+	}
+	
+}
