@@ -25,6 +25,11 @@ import edu.umd.cs.piccolo.nodes.PPath;
 
 public class TextMap {
 	
+	private static final int MIN_CHARACTER_WIDTH = 1;
+	private static final int MAX_CHARACTER_WIDTH = 50;
+	private static final int MIN_CHARACTER_HEIGHT = 8;
+	private static final int MAX_CHARACTER_HEIGHT = 20;
+
 	static class TextBlock {
 		public int x;
 		public int y;
@@ -54,17 +59,8 @@ public class TextMap {
 		int w1 = Math.min(characterBlockMask.width()-x1-2,width);
 		int h1 = Math.min(characterBlockMask.height()-y1-2,height);
 		int w0 = characterBlockMask.width();
-		int h0 = characterBlockMask.height();
-		
-		
-//		try{
-		cvSetImageROI(characterBlockMask,
-				cvRect(x1,y1,w1,h1));
-//		}catch(Exception e){
-//			w0 = w0 + 0;
-//			System.out.println(e + "" + w0 + h0);
-//			System.out.println(e + "" + w0 + h0);
-//		}
+		int h0 = characterBlockMask.height();		
+		cvSetImageROI(characterBlockMask, cvRect(x1,y1,w1,h1));
 		int n = cvCountNonZero(characterBlockMask);
 		cvResetImageROI(characterBlockMask);
 		return 1.0 * n / (width*height);
@@ -107,6 +103,10 @@ public class TextMap {
 		
 	}	
 	
+	public BufferedImage getImage(){
+		return characterBlockMask.getBufferedImage();
+	}
+	
 	ImageRenderer visualize(BufferedImage input, final List<TextBlock> blobs){
 		ImageRenderer m = new PiccoloImageRenderer(input){
 			@Override
@@ -147,14 +147,6 @@ public class TextMap {
 				CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 		List<TextBlock> blobs = Lists.newArrayList(); 
 
-//		while (contour != null && !contour.isNull()) {
-//			if (contour.elem_size() > 0) {
-//				CvRect b = cvBoundingRect(contour,0);
-//				TextBlock blob = new TextBlock(b.x(), b.y(), b.width(), b.height());
-//				blobs.add(blob);
-//			}
-//			contour = contour.h_next();
-//		}
 		collectBlobs(contour, blobs);
 		return blobs;
 	}
@@ -163,7 +155,7 @@ public class TextMap {
 		while (seq != null && !seq.isNull()) {
 			if (seq.elem_size() > 0) {
 				CvRect b = cvBoundingRect(seq,0);
-				if (b.height() < 14){
+				if (b.height() < MAX_CHARACTER_HEIGHT){
 					TextBlock blob = new TextBlock(b.x(), b.y(), b.width(), b.height());
 					blobs.add(blob);
 				} else{					
@@ -172,24 +164,13 @@ public class TextMap {
 			}
 			seq = seq.h_next();
 		}
-		
-//		CvRect b = cvBoundingRect(seq,0);
-//		
-//		if (b.height() < 14){
-////			TextBlock blob = new TextBlock(b.x(), b.y(), b.width(), b.height());
-////			blobs.add(blob);
-//			return;			
-//		}else{
-//			
-//			
-//		}		
 	}
 	
 	List<TextBlock> rejectOverlyLargeOrSmallBlobs(List<TextBlock> blobs){
 		List<TextBlock> out = Lists.newArrayList();
 		for (TextBlock b : blobs){				
-			if (b.width <= 50 && b.height <= 20
-					&& b.width >= 1 && b.height >= 8){
+			if (b.width <= MAX_CHARACTER_WIDTH && b.height <= MAX_CHARACTER_HEIGHT
+					&& b.width >= MIN_CHARACTER_WIDTH && b.height >= MIN_CHARACTER_HEIGHT){
 				out.add(b);
 			}
 		}			
