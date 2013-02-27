@@ -130,9 +130,13 @@ public class TemplateMatchingUtilities {
 		
 		IplImage maskedResult = IplImage.createCompatible(result);
 		cvSet(maskedResult, cvScalarAll(0));
-		cvCopy(result, maskedResult, keepMask);
-		
+		cvCopy(result, maskedResult, keepMask);		
 		explainer.result(visualizeResultMatrix(maskedResult), "match result with only ROIs");
+		
+		
+		// pre-emptively release non-used IplImages
+		maskedResult.release();
+		keepMask.release();
 		
 		return result;
 	}
@@ -200,7 +204,6 @@ public class TemplateMatchingUtilities {
 		CvPoint minPoint = new CvPoint(2);
 		CvPoint maxPoint = new CvPoint(2);
 
-
 		opencv_core.cvMinMaxLoc(resultMatrix, min, max, minPoint, maxPoint, null);
 
 		double detectionScore = max[0];
@@ -212,10 +215,8 @@ public class TemplateMatchingUtilities {
 		r.width = target.width();
 		r.height = target.height();
 		r.score = detectionScore;
-		//TemplateMatchResult r = new TemplateMatchResult();
-		//TemplateMatchResult r = new Rectangle(detectionLoc.x(),detectionLoc.y(),target.width(),target.height());
-		//r.score = (float) detectionScore;
 
+		
 		// Suppress returned match
 		int xmargin = target.width()/3;
 		int ymargin = target.height()/3;
