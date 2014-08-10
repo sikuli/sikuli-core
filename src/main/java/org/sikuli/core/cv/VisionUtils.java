@@ -39,7 +39,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class VisionUtils {
-	 
+	
+	static ImageExplainer explainer = ImageExplainer.getExplainer(VisionUtils.class);
 	
 	static public <T> T[] mapOverCols(IplImage input, Class<T> c, Function<CvArr, T> op){
 		CvRect roi = cvGetImageROI(input);
@@ -75,18 +76,6 @@ public class VisionUtils {
 	}
 
 	
-	// If the input image is blank, namely, the entire image looks like margin,
-	// the returned image is an zero size image (both width and height are zero).
-	static public BufferedImage getSubimageInsideMargin(BufferedImage image){
-		Rectangle r = MarginFinderOld.getRegionInsideMargin(image);
-		return image.getSubimage(r.x, r.y, r.width, r.height);
-	}
-	
-	static public Rectangle getRegionInsideMargin(BufferedImage image){
-		return MarginFinderOld.getRegionInsideMargin(image);
-	}
-
-	
 	static public BufferedImage createComponentImage(Component component) {
 		Dimension size = component.getSize();
 		BufferedImage image = new BufferedImage(size.width, size.height,
@@ -97,14 +86,6 @@ public class VisionUtils {
 		return image;
 	}
 	
-	static public BufferedImage captureScreen(Rectangle rect){
-		try {
-			return (new Robot()).createScreenCapture(rect);
-		} catch (AWTException e) {
-		}
-		return null;
-	}
-			
 	static public List<CvRect> detectBlobs(IplImage input){
 		IplImage clone = input.clone();
 		CvMemStorage storage = CvMemStorage.create();
@@ -212,62 +193,9 @@ public class VisionUtils {
 		//cvAdaptiveThreshold(foregroundMask,foregroundMask,255,CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 5, 1);
 		return foreground;
 	}
-
-	
-	
-	static public double computeBestTemplateMatchScore(IplImage input, IplImage template){
-		TemplateMatchHelper th = new TemplateMatchHelper(CV_TM_CCOEFF_NORMED);		
-//		cvSetImageROI(im1, roi);
-		th.match(input, template);
-		FindResult fetchResult = th.fetchResult();
-		double score = fetchResult.score;
-//		cvResetImageROI(im1);
-		return score;
-	}
-	
-	@Deprecated
-	static public IplImage computeWeighingMask(int w, int h){
-//		IplImage mask = IplImage.create(cvSize(w,h), 8, 1);
-//		cvSet(mask, cvScalarAll(255), null);
-//		//cvSet1D(mask, )
-//
-//
-//		cvSet2D(mask, w/2, h/2, cvScalarAll(0));
-//		
-//		IplImage dist = IplImage.create(cvSize(w,h), 32, 1);		
-//		cvDistTransform(mask, dist, CV_DIST_L1, 3, null, null, 0);
-//		
-//		IplImage out = IplImage.createCompatible(mask);
-//		cvConvertScaleAbs(dist, out, -1, 0);
-//		
-//		
-//		cvSubRS(out, cvScalarAll(255), out, null);
-//		
-//		try {
-//			ImageIO.write(out.getBufferedImage(), "png", new File("dist.png"));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-//		return mask;
-		return null;
-	}
-
 	
 	static public BufferedImage paintBlobsOnImage(BufferedImage image, List<CvRect> blobs){
 		return (new BlobPainter(image,blobs)).render();
-	}
-	
-	
-
-		
-
-	
-	static public void extractCharacterBlocks(BufferedImage image){
-	
-		TextMap e = new TextMap();
-		e.init(image);
 	}
 	
 	public static IplImage cloneWithoutAlphaChannel(IplImage bgra){
@@ -285,18 +213,6 @@ public class VisionUtils {
 		return bgr;
 	}
 	
-	static ImageExplainer explainer = ImageExplainer.getExplainer(VisionUtils.class);
-	
-	public static void main(String[] args) throws IOException {
-		//BasicConfigurator.configure();
-		ImageExplainer.getExplainer(TextMap.class).setLevel(Level.ALL);
-		
 
-		BufferedImage image = ImageIO.read(new File("screen.png"));
-		//extractCharacterBlocks(image);
-		
-		TextMap m = TextMap.createFrom(image);
-		m.computeTextScore(10, 10, 200 ,200);
-	}
 	
 }
