@@ -15,9 +15,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,8 +26,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.sikuli.core.draw.ImageRenderer;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroupFile;
 
 import edu.umd.cs.piccolo.PCanvas;
 import edu.umd.cs.piccolo.nodes.PImage;
@@ -49,6 +45,8 @@ interface Appender {
 	void doAppend(ImageExplanation event);	
 }
 
+
+// This DefaulAppender writes explanation images to a local folder
 class DefaultAppender implements Appender {
 
 	private static final int MIN_CANVAS_HEIGHT = 30;
@@ -154,15 +152,12 @@ public class ImageExplainer {
 
 	final private String name;
 	private Level level = Level.OFF;
-	private int counter = 0;
 
 	class ImageLogRecord{
 		String title = "";
 		String image_filename = "";
 		String description = "";
 	}
-
-	private List<ImageLogRecord> records = new ArrayList<ImageLogRecord>();
 
 	public ImageExplainer(String name){
 		this.name = name;
@@ -171,28 +166,6 @@ public class ImageExplainer {
 	public void setLevel(Level level){
 		this.level = level;
 	}
-
-
-	public void writeLogReportAsHTML() throws IOException{
-		STGroupFile g = new STGroupFile("org/sikuli/core/cv/logger.stg", "utf-8", '$', '$');
-
-		List<ST> sts = new ArrayList<ST>();				
-		for (ImageLogRecord record : records){		
-			ST st = g.getInstanceOf("image_log_record");
-			st.add("title",record.title);
-			st.add("image_filename",record.image_filename);
-			st.add("description", record.description);
-			sts.add(st);
-		}
-
-		ST reportST = g.getInstanceOf("report");
-		reportST.add("records",sts);
-
-		BufferedWriter out = new BufferedWriter(new FileWriter(getName() + ".html"));
-		out.write(reportST.render());
-		out.flush();
-	}
-
 
 	public void result(IplImage image, Object message){
 		result(image.getBufferedImage(),message);
@@ -236,66 +209,6 @@ public class ImageExplainer {
 			event.image = image;
 			appender.doAppend(event);
 		}
-	}
-
-	@Deprecated
-	public void log(String title, IplImage image){
-		log(title, image.getBufferedImage());
-	}
-
-	@Deprecated
-	public void log(String title, BufferedImage image) {
-
-		String filename = "vlog." + getName() + "." + counter + "." + title + ".png";
-		try {
-			ImageIO.write(image, "png", new File(filename));			
-		} catch (IOException e) {
-		}		
-
-		ImageExplanation event = new ImageExplanation();
-		event.logger = this;
-		event.message = title;
-		event.timestamp = new Date().getTime();
-		event.imageLocalPath = filename;
-		appender.doAppend(event);		
-	}
-
-	@Deprecated
-	public void log(String title, BufferedImage image, String description) {
-
-		String filename = "vlog." + getName() + "." + counter + "." + title + ".png";
-		counter++;
-		try {
-			ImageIO.write(image, "png", new File(filename));
-
-			ImageLogRecord r = new ImageLogRecord();
-			r.title = title;
-			r.image_filename = filename;		
-			r.description = description;
-			records.add(r);
-
-		} catch (IOException e) {
-		}		
-	}
-
-	@Deprecated
-	static private boolean isEnabled = false;
-	@Deprecated
-	static public void setEnabledGlobal(boolean enabled){
-		isEnabled = enabled;
-	}
-	
-	static private int count;
-	@Deprecated
-	static public void vlog(String title, BufferedImage image) {
-		if (!isEnabled)
-			return;		
-		String name = "vlog." + count + "." + title + ".png";
-		try {
-			ImageIO.write(image, "png", new File(name));
-		} catch (IOException e) {
-		}		
-		count++;
 	}
 
 	public String getName() {

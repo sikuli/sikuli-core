@@ -42,40 +42,6 @@ public class VisionUtils {
 	
 	static ImageExplainer explainer = ImageExplainer.getExplainer(VisionUtils.class);
 	
-	static public <T> T[] mapOverCols(IplImage input, Class<T> c, Function<CvArr, T> op){
-		CvRect roi = cvGetImageROI(input);
-		@SuppressWarnings("unchecked")
-		T[] vals = (T[]) Array.newInstance(c,roi.width());
-
-		for (int i = roi.x(); i < roi.x() + roi.width(); ++i){
-			CvRect colROI = cvRect(i,roi.y(),1, roi.height());
-			cvSetImageROI(input, colROI);
-			T val = op.apply(input);
-			vals[i-roi.x()] = val;
-			cvResetImageROI(input);				
-		}	
-		cvSetImageROI(input, roi);
-		return vals;
-	}
-	
-	static public <T> T[] mapOverRows(IplImage input, Class<T> c, Function<CvArr, T> op){
-
-		CvRect roi = cvGetImageROI(input);
-		@SuppressWarnings("unchecked")
-		T[] vals = (T[]) Array.newInstance(c,roi.height());
-
-		for (int i = roi.y(); i < roi.y() + roi.height(); ++i){
-			CvRect rowROI = cvRect(roi.x(),i,roi.width(),1); 
-			cvSetImageROI(input, rowROI);
-			T val = op.apply(input);
-			vals[i-roi.y()] = val;
-			cvResetImageROI(input);					
-		}	
-		cvSetImageROI(input, roi);
-		return vals;
-	}
-
-	
 	static public BufferedImage createComponentImage(Component component) {
 		Dimension size = component.getSize();
 		BufferedImage image = new BufferedImage(size.width, size.height,
