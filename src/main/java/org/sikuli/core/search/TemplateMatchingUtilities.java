@@ -1,7 +1,9 @@
 package org.sikuli.core.search;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -9,11 +11,6 @@ import java.util.List;
 
 import org.sikuli.core.cv.VisionUtils;
 import org.sikuli.core.logging.ImageExplainer;
-
-import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_imgproc;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class TemplateMatchingUtilities {
 	
@@ -159,15 +156,15 @@ public class TemplateMatchingUtilities {
 	}
 	
 	public static TemplateMatchResult fetchNextBestMatch1(IplImage resultMatrix, IplImage target){
-		double min[] = new double[1];
-		double max[] = new double[1];
+		DoublePointer min = new DoublePointer(1);
+		DoublePointer max = new DoublePointer(1);
 		CvPoint minPoint = new CvPoint(2);
 		CvPoint maxPoint = new CvPoint(2);
 
 
-		opencv_core.cvMinMaxLoc(resultMatrix, min, max, minPoint, maxPoint, null);
+		cvMinMaxLoc(resultMatrix, min, max, minPoint, maxPoint, null);
 
-		double detectionScore = min[0];
+		double detectionScore = min.get(0);
 		CvPoint detectionLoc = minPoint;
 
 		TemplateMatchResult r = new TemplateMatchResult();
@@ -199,14 +196,14 @@ public class TemplateMatchingUtilities {
 	}
 	
 	public static TemplateMatchResult fetchNextBestMatch(IplImage resultMatrix, IplImage target){
-		double min[] = new double[1];
-		double max[] = new double[1];
+		DoublePointer min = new DoublePointer(1);
+		DoublePointer max = new DoublePointer(1);
 		CvPoint minPoint = new CvPoint(2);
 		CvPoint maxPoint = new CvPoint(2);
 
 		opencv_core.cvMinMaxLoc(resultMatrix, min, max, minPoint, maxPoint, null);
 
-		double detectionScore = max[0];
+		double detectionScore = max.get(0);
 		CvPoint detectionLoc = maxPoint;
 
 		TemplateMatchResult r = new TemplateMatchResult();

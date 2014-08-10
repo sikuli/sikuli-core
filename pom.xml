@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -32,7 +33,7 @@
 	<groupId>org.sikuli</groupId>
 	<artifactId>sikuli-core</artifactId>
 	<name>sikuli-core</name>
-	<url>http://www.sikuli.org</url>
+	<url>http://lab.sikuli.org</url>
 	<version>1.1.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -40,18 +41,17 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>JavaCV Maven</id>
-			<url>http://maven2.javacv.googlecode.com/git/</url>
-		</repository>
-		<repository>
-			<id>JavaCPP Maven</id>
-			<url>http://maven2.javacpp.googlecode.com/git/</url>
-		</repository>
-	</repositories>
+	<!-- <repositories> <repository> <id>JavaCV Maven</id> <url>http://maven2.javacv.googlecode.com/git/</url> 
+		</repository> </repositories> -->
 
 	<dependencies>
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv</artifactId>
+			<version>0.8</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -75,46 +75,19 @@
 			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacpp</groupId>
-			<artifactId>javacpp</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<version>0.1</version>
-			<classifier>macosx-x86_64</classifier>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<version>0.1</version>
-			<classifier>windows-x86</classifier>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<version>0.1</version>
-			<classifier>windows-x86_64</classifier>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<version>0.1</version>
-			<classifier>linux-x86_64</classifier>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.javacv</groupId>
-			<artifactId>javacv</artifactId>
-			<version>0.1</version>
-			<classifier>linux-x86</classifier>
-		</dependency>
+		<!-- <dependency> <groupId>com.googlecode.javacpp</groupId> <artifactId>javacpp</artifactId> 
+			<version>0.1</version> </dependency> <dependency> <groupId>com.googlecode.javacv</groupId> 
+			<artifactId>javacv</artifactId> <version>0.1</version> </dependency> <dependency> 
+			<groupId>com.googlecode.javacv</groupId> <artifactId>javacv</artifactId> 
+			<version>0.1</version> <classifier>macosx-x86_64</classifier> </dependency> 
+			<dependency> <groupId>com.googlecode.javacv</groupId> <artifactId>javacv</artifactId> 
+			<version>0.1</version> <classifier>windows-x86</classifier> </dependency> 
+			<dependency> <groupId>com.googlecode.javacv</groupId> <artifactId>javacv</artifactId> 
+			<version>0.1</version> <classifier>windows-x86_64</classifier> </dependency> 
+			<dependency> <groupId>com.googlecode.javacv</groupId> <artifactId>javacv</artifactId> 
+			<version>0.1</version> <classifier>linux-x86_64</classifier> </dependency> 
+			<dependency> <groupId>com.googlecode.javacv</groupId> <artifactId>javacv</artifactId> 
+			<version>0.1</version> <classifier>linux-x86</classifier> </dependency> -->
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>stringtemplate</artifactId>
@@ -124,7 +97,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>14.0.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.piccolo2d</groupId>
 			<artifactId>piccolo2d-extras</artifactId>

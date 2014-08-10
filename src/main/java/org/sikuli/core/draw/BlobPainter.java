@@ -6,7 +6,10 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Random;
 
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
+
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
+import org.bytedeco.javacpp.opencv_core.CvRect;
 
 import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.nodes.PPath;

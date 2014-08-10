@@ -7,8 +7,10 @@
  ******************************************************************************/
 package org.sikuli.core.cv;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -18,13 +20,6 @@ import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
-import com.googlecode.javacv.cpp.opencv_core.CvSize;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_imgproc;
 
 public class TemplateFinder {
 
@@ -233,11 +228,13 @@ class BaseTemplateFinder {
 
 		IplImage map = computeTemplateMatchResultMatrix(inputGray, targetGray);
 
-		double min[] = new double[1];
-		double max[] = new double[1];
+//		double min[] = new double[1];
+//		double max[] = new double[1];
 		CvPoint minPoint = new CvPoint(2);
 		CvPoint maxPoint = new CvPoint(2);
-
+		DoublePointer min = new DoublePointer(1);
+		DoublePointer max = new DoublePointer(1);
+		
 		opencv_core.cvMinMaxLoc(map, min, max, minPoint, maxPoint, null);
 
 		cvReleaseImage(map);
@@ -256,7 +253,7 @@ class BaseTemplateFinder {
 		result.y = maxPoint.y();
 		result.width = targetImage.getWidth();
 		result.height = targetImage.getHeight();
-		result.score = max[0];
+		result.score = max.get(0);
 
 		return result;
 		//  }
@@ -439,15 +436,15 @@ class MatchFetcher {
 	}
 
 	FindResult fetchNextMatch(){
-		double min[] = new double[1];
-		double max[] = new double[1];
+		DoublePointer min = new DoublePointer(1);
+		DoublePointer max = new DoublePointer(1);		
 		CvPoint minPoint = new CvPoint(2);
 		CvPoint maxPoint = new CvPoint(2);
 
 
 		opencv_core.cvMinMaxLoc(resultMatrix, min, max, minPoint, maxPoint, null);
 
-		double detectionScore = max[0];
+		double detectionScore = max.get(0);
 		CvPoint detectionLoc = maxPoint;
 
 		FindResult r = new FindResult();

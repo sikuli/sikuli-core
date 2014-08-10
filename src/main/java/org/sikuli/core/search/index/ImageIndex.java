@@ -13,8 +13,10 @@ import org.sikuli.core.search.SearchAlgorithmOutput;
 
 import com.google.common.collect.Lists;
 
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-import static com.googlecode.javacv.cpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 public class ImageIndex {
 	

@@ -7,8 +7,7 @@
  ******************************************************************************/
 package org.sikuli.core.logging;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvConvertScale;
-import static com.googlecode.javacv.cpp.opencv_core.cvSize;
+import static org.bytedeco.javacpp.opencv_core.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,9 +19,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +30,6 @@ import javax.imageio.ImageIO;
 import org.sikuli.core.draw.ImageRenderer;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.umd.cs.piccolo.PCanvas;
 import edu.umd.cs.piccolo.nodes.PImage;

@@ -1,9 +1,9 @@
 package org.sikuli.core.search.algorithm;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvAvg;
-import static com.googlecode.javacv.cpp.opencv_core.cvRect;
-import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
-import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 import java.awt.Rectangle;
 import java.util.Collections;
@@ -20,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.primitives.Doubles;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class SearchByTextureAndColorAtOriginalResolution implements SearchAlgorithm<RegionMatch>{
 

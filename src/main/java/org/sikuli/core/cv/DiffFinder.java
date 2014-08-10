@@ -14,9 +14,12 @@ import org.sikuli.core.draw.PiccoloImageRenderer;
 import org.sikuli.core.logging.ImageExplainer;
 import org.sikuli.core.search.ScoredItem;
 
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
-import com.googlecode.javacv.cpp.opencv_imgproc;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import static org.bytedeco.javacpp.opencv_highgui.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
+
 
 import edu.umd.cs.piccolo.PCanvas;
 import edu.umd.cs.piccolo.PLayer;
@@ -24,8 +27,6 @@ import edu.umd.cs.piccolo.POffscreenCanvas;
 import edu.umd.cs.piccolo.nodes.PImage;
 import edu.umd.cs.piccolo.nodes.PPath;
 import edu.umd.cs.piccolo.nodes.PText;
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
 
 public class DiffFinder {
 
@@ -76,7 +77,7 @@ public class DiffFinder {
 		logger.step(diff, "diff (color)");
 
 		IplImage diffg = IplImage.create(cvGetSize(before),8,1);
-		opencv_imgproc.cvCvtColor(diff, diffg, CV_RGB2GRAY);
+		cvCvtColor(diff, diffg, CV_RGB2GRAY);
 
 		logger.step(diffg, "diff (gray)");
 

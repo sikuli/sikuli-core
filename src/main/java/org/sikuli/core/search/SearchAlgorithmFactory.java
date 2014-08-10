@@ -1,6 +1,9 @@
 package org.sikuli.core.search;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 
 import java.awt.BasicStroke;
@@ -14,9 +17,6 @@ import org.sikuli.core.logging.ImageExplainer;
 import org.sikuli.core.search.TemplateMatchingUtilities.TemplateMatchResult;
 
 import com.google.common.collect.Lists;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.nodes.PPath;
@@ -49,8 +49,8 @@ public class SearchAlgorithmFactory {
 			List<Rectangle> sampleRectangles = sampleSalientLocalRectangles(queryGray, ignoreMask);			
 			IplImage voteMatrix = vote(inputGray, queryGray, sampleRectangles);
 
-			final double min[] = new double[1];
-			final double max[] = new double[1];
+			DoublePointer min = new DoublePointer(1);
+			DoublePointer max = new DoublePointer(1);
 			CvPoint minPoint = new CvPoint(2);
 			CvPoint maxPoint = new CvPoint(2);
 			cvMinMaxLoc(voteMatrix, min, max, minPoint, maxPoint, null);
@@ -66,14 +66,14 @@ public class SearchAlgorithmFactory {
 					layer.addChild(p);
 				}			
 			};
-			if (max[0] < NUM_LOCAL_PATCHES){
+			if (max.get(0) < NUM_LOCAL_PATCHES){
 				logger.step(anno.render(), "best location (not a match)");
 			}else{
 				logger.step(anno.render(), "best location");
 			}
 
 
-			double score = (double) max[0] / (NUM_LOCAL_PATCHES*VOTE_INCREMENT);
+			double score = (double) max.get(0) / (NUM_LOCAL_PATCHES*VOTE_INCREMENT);
 			RegionMatch m = new RegionMatch(b);
 			m.setScore(score);
 		}	

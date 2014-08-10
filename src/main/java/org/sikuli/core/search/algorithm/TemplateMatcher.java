@@ -10,7 +10,12 @@ import org.sikuli.core.search.TemplateMatchingUtilities;
 import org.sikuli.core.search.TemplateMatchingUtilities.TemplateMatchResult;
 
 import com.google.common.collect.Lists;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
+
 
 public class TemplateMatcher {
 	

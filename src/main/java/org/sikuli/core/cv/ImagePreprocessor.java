@@ -7,21 +7,12 @@
  ******************************************************************************/
 package org.sikuli.core.cv;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvGetSize;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGRA2RGB;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2HSV;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RGB2Lab;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class ImagePreprocessor {
 	

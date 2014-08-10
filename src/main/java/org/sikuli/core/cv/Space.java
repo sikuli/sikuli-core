@@ -1,9 +1,9 @@
 package org.sikuli.core.cv;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvAvgSdv;
-import static com.googlecode.javacv.cpp.opencv_core.cvRect;
-import static com.googlecode.javacv.cpp.opencv_core.cvResetImageROI;
-import static com.googlecode.javacv.cpp.opencv_core.cvSetImageROI;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,10 +13,6 @@ import java.awt.image.BufferedImage;
 import org.sikuli.core.draw.ImageRenderer;
 import org.sikuli.core.draw.PiccoloImageRenderer;
 import org.sikuli.core.logging.ImageExplainer;
-
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 import edu.umd.cs.piccolo.PLayer;
 import edu.umd.cs.piccolo.nodes.PPath;

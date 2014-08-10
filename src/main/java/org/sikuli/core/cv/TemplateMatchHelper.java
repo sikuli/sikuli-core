@@ -7,22 +7,13 @@
  ******************************************************************************/
 package org.sikuli.core.cv;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_FILLED;
-import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
-import static com.googlecode.javacv.cpp.opencv_core.cvRealScalar;
-import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
-import static com.googlecode.javacv.cpp.opencv_core.cvSize;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_TM_SQDIFF;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_TM_SQDIFF_NORMED;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 import java.awt.Rectangle;
 import java.util.List;
-
-
-import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_imgproc;
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class TemplateMatchHelper {
 
@@ -72,8 +63,8 @@ public class TemplateMatchHelper {
 //	}
 
 	public FindResult fetchResult(){
-		double min[] = new double[1];
-		double max[] = new double[1];
+		DoublePointer min = new DoublePointer(1);
+		DoublePointer max = new DoublePointer(1);		
 		CvPoint minPoint = new CvPoint(2);
 		CvPoint maxPoint = new CvPoint(2);
 
@@ -84,10 +75,10 @@ public class TemplateMatchHelper {
 		CvPoint detectionLoc;
 		
 		if (method == CV_TM_SQDIFF || method == CV_TM_SQDIFF_NORMED){
-			detectionScore = min[0];
+			detectionScore = min.get(0);
 			detectionLoc = minPoint;
 		}else{			
-			detectionScore = max[0];
+			detectionScore = max.get(0);
 			detectionLoc = maxPoint;
 		}
 

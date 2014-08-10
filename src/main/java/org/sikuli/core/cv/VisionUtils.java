@@ -7,8 +7,10 @@
  ******************************************************************************/
 package org.sikuli.core.cv;
 
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+import org.bytedeco.javacv.*;
+import org.bytedeco.javacpp.*;
 
 import java.awt.AWTException;
 import java.awt.BasicStroke;
@@ -35,15 +37,6 @@ import org.sikuli.core.logging.ImageExplainer.Level;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core.CvContour;
-import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
-import com.googlecode.javacv.cpp.opencv_core.CvRect;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.CvSeq;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_imgproc.IplConvKernel;
-
 
 public class VisionUtils {
 	 
@@ -232,31 +225,33 @@ public class VisionUtils {
 		return score;
 	}
 	
+	@Deprecated
 	static public IplImage computeWeighingMask(int w, int h){
-		IplImage mask = IplImage.create(cvSize(w,h), 8, 1);
-		cvSet(mask, cvScalarAll(255), null);
-		//cvSet1D(mask, )
-
-
-		cvSet2D(mask, w/2, h/2, cvScalarAll(0));
+//		IplImage mask = IplImage.create(cvSize(w,h), 8, 1);
+//		cvSet(mask, cvScalarAll(255), null);
+//		//cvSet1D(mask, )
+//
+//
+//		cvSet2D(mask, w/2, h/2, cvScalarAll(0));
+//		
+//		IplImage dist = IplImage.create(cvSize(w,h), 32, 1);		
+//		cvDistTransform(mask, dist, CV_DIST_L1, 3, null, null, 0);
+//		
+//		IplImage out = IplImage.createCompatible(mask);
+//		cvConvertScaleAbs(dist, out, -1, 0);
+//		
+//		
+//		cvSubRS(out, cvScalarAll(255), out, null);
+//		
+//		try {
+//			ImageIO.write(out.getBufferedImage(), "png", new File("dist.png"));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		IplImage dist = IplImage.create(cvSize(w,h), 32, 1);		
-		cvDistTransform(mask, dist, CV_DIST_L1, 3, null, null, 0);
-		
-		IplImage out = IplImage.createCompatible(mask);
-		cvConvertScaleAbs(dist, out, -1, 0);
-		
-		
-		cvSubRS(out, cvScalarAll(255), out, null);
-		
-		try {
-			ImageIO.write(out.getBufferedImage(), "png", new File("dist.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return mask;
+//		return mask;
+		return null;
 	}
 
 	
