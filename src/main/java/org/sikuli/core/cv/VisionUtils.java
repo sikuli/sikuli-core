@@ -7,35 +7,40 @@
  ******************************************************************************/
 package org.sikuli.core.cv;
 
-import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
-import org.bytedeco.javacv.*;
-import org.bytedeco.javacpp.*;
+import static org.bytedeco.javacpp.helper.opencv_core.cvMixChannels;
+import static org.bytedeco.javacpp.helper.opencv_imgproc.cvFindContours;
+import static org.bytedeco.javacpp.opencv_core.cvCopy;
+import static org.bytedeco.javacpp.opencv_core.cvGetSize;
+import static org.bytedeco.javacpp.opencv_core.cvScalarAll;
+import static org.bytedeco.javacpp.opencv_core.cvSet;
+import static org.bytedeco.javacpp.opencv_core.cvSetImageCOI;
+import static org.bytedeco.javacpp.opencv_core.cvSubRS;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_BGR2GRAY;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_CHAIN_APPROX_SIMPLE;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_RETR_EXTERNAL;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_SHAPE_RECT;
+import static org.bytedeco.javacpp.opencv_imgproc.cvBoundingRect;
+import static org.bytedeco.javacpp.opencv_imgproc.cvCanny;
+import static org.bytedeco.javacpp.opencv_imgproc.cvCvtColor;
+import static org.bytedeco.javacpp.opencv_imgproc.cvDilate;
 
-import java.awt.AWTException;
-import java.awt.BasicStroke;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Robot;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.List;
-import java.util.Random;
 
-import javax.imageio.ImageIO;
-
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_core.CvContour;
+import org.bytedeco.javacpp.opencv_core.CvMemStorage;
+import org.bytedeco.javacpp.opencv_core.CvRect;
+import org.bytedeco.javacpp.opencv_core.CvScalar;
+import org.bytedeco.javacpp.opencv_core.CvSeq;
+import org.bytedeco.javacpp.opencv_core.IplConvKernel;
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.sikuli.core.draw.BlobPainter;
 import org.sikuli.core.logging.ImageExplainer;
-import org.sikuli.core.logging.ImageExplainer.Level;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class VisionUtils {

@@ -2,7 +2,6 @@ package org.sikuli.core.search.internal;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
-import org.bytedeco.javacv.*;
 import org.bytedeco.javacpp.*;
 
 import java.awt.Rectangle;
